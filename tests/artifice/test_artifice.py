@@ -4,4 +4,4 @@
 def test_artifice():
     """Testing the ... function."""
 
-    assert True
+    assert False
