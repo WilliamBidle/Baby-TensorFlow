@@ -10,7 +10,7 @@ X_SYMBOL = symbols("x", real=True)
 
 
 class ActivationFunction:
-    """ Loss function base-class. """
+    """Loss function base-class."""
 
     def __init__(self):
 
@@ -22,8 +22,8 @@ class ActivationFunction:
             self.expression_diff = None
 
     def evaluate(self, x: np.ndarray, diff=False):
-        """ 
-        Evaluate the activation function given the input value. 
+        """
+        Evaluate the activation function given the input value.
 
         :param x: The input values to apply the activation function on.
         :param diff: Whether or not to evalutate the derivitive of the loss function.
@@ -41,34 +41,33 @@ class ActivationFunction:
 
 
 class ReLU(ActivationFunction):
-    """ ReLU activation function. """
+    """ReLU activation function."""
 
     def __init__(self):
 
-        self.expression = Piecewise(
-            (0, X_SYMBOL < 0), (X_SYMBOL, X_SYMBOL >= 0))
+        self.expression = Piecewise((0, X_SYMBOL < 0), (X_SYMBOL, X_SYMBOL >= 0))
 
         super().__init__()
 
     def __repr__(self):
-        return f'Relu Activation Function: \n{self.expression}'
+        return f"Relu Activation Function: \n{self.expression}"
 
 
 class Sigmoid(ActivationFunction):
-    """ Sigmoid activation function. """
+    """Sigmoid activation function."""
 
     def __init__(self):
 
-        self.expression = 1/(1+exp(0 - X_SYMBOL))
+        self.expression = 1 / (1 + exp(0 - X_SYMBOL))
 
         super().__init__()
 
     def __repr__(self):
-        return f'Relu Activation Function: \n{self.expression}'
+        return f"Relu Activation Function: \n{self.expression}"
 
 
 class Tanh(ActivationFunction):
-    """ Tanh activation function. """
+    """Tanh activation function."""
 
     def __init__(self):
 
@@ -77,11 +76,11 @@ class Tanh(ActivationFunction):
         super().__init__()
 
     def __repr__(self):
-        return f'Relu Activation Function: \n{self.expression}'
+        return f"Relu Activation Function: \n{self.expression}"
 
 
 class Linear(ActivationFunction):
-    """ Linear activation function. """
+    """Linear activation function."""
 
     def __init__(self):
 
@@ -90,4 +89,4 @@ class Linear(ActivationFunction):
         super().__init__()
 
     def __repr__(self):
-        return f'Relu Activation Function: \n{self.expression}'
+        return f"Relu Activation Function: \n{self.expression}"
