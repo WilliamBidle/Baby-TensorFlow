@@ -45,7 +45,7 @@ class ReLU(ActivationFunction):
 
     def __init__(self):
 
-        self.expression = Piecewise((0, X_SYMBOL < 0), (X_SYMBOL, X_SYMBOL >= 0))
+        self.expression = Piecewise((0, X_SYMBOL <= 0), (X_SYMBOL, X_SYMBOL > 0))
 
         super().__init__()
 
