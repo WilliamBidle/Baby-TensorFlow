@@ -106,6 +106,20 @@ class MeanLogSquaredError(LossFunction):
         return f"Mean Logarithmic Squared Error Loss Function: \n{self.expression}"
 
 
+class PoissonError(LossFunction):
+    """PoissonError loss function."""
+
+    def __init__(self):
+
+        self.expression = Y_PRED - Y_TRUE * log(Y_PRED + K.epsilon())
+
+        super().__init__()
+
+    def __repr__(self):
+
+        return f"Poisson Loss Function: \n{self.expression}"
+
+
 class BinaryCrossEntropy(LossFunction):
     """BinaryCrossEntropy loss function."""
 
@@ -121,17 +135,3 @@ class BinaryCrossEntropy(LossFunction):
     def __repr__(self):
 
         return f"Binary Cross-Entropy Loss Function: \n{self.expression}"
-
-
-class PoissonError(LossFunction):
-    """PoissonError loss function."""
-
-    def __init__(self):
-
-        self.expression = Y_PRED - Y_TRUE * log(Y_PRED + K.epsilon())
-
-        super().__init__()
-
-    def __repr__(self):
-
-        return f"Poisson Loss Function: \n{self.expression}"

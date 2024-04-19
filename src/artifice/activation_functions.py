@@ -63,7 +63,7 @@ class Sigmoid(ActivationFunction):
         super().__init__()
 
     def __repr__(self):
-        return f"Relu Activation Function: \n{self.expression}"
+        return f"Sigmoid Activation Function: \n{self.expression}"
 
 
 class Tanh(ActivationFunction):
@@ -76,7 +76,7 @@ class Tanh(ActivationFunction):
         super().__init__()
 
     def __repr__(self):
-        return f"Relu Activation Function: \n{self.expression}"
+        return f"Tanh Activation Function: \n{self.expression}"
 
 
 class Linear(ActivationFunction):
@@ -89,4 +89,4 @@ class Linear(ActivationFunction):
         super().__init__()
 
     def __repr__(self):
-        return f"Relu Activation Function: \n{self.expression}"
+        return f"Linear Activation Function: \n{self.expression}"
