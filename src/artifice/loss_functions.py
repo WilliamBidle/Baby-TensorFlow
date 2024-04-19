@@ -41,7 +41,11 @@ class LossFunction:
             func = lambdify((Y_PRED, Y_TRUE), self.expression)
 
         # Need to return the sum of the loss function if not differentiating
-        return func(y_pred, y_true) if diff else np.mean(func(y_pred, y_true))
+        return (
+            func(y_pred, y_true) / len(y_true)
+            if diff
+            else np.mean(func(y_pred, y_true))
+        )
 
 
 class MeanSquaredError(LossFunction):
@@ -91,7 +95,9 @@ class MeanLogSquaredError(LossFunction):
 
     def __init__(self):
 
-        self.expression = (log(Y_PRED + 1.0) - log(Y_TRUE + 1.0)) ** 2
+        self.expression = (
+            log(Y_TRUE + 1.0 + K.epsilon()) - log(Y_PRED + 1.0 + K.epsilon())
+        ) ** 2
 
         super().__init__()
 
