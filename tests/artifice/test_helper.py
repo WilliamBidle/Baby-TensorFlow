@@ -1,5 +1,6 @@
 """ Tests for the artifice.helper module. """
 
+import pytest
 import numpy as np
 
 from artifice.helper import apply_random_permutation, one_hot_encode
@@ -13,6 +14,11 @@ def test_apply_random_permutation():
 
     # Check that the permuted arrays permuted the same
     assert np.allclose(permuted_arr_1, permuted_arr_2)
+
+    # Check that trying to evaluate the base class unset loss function will result in an error.
+    with pytest.raises(ValueError, match="Both arrays must be the same length."):
+        arr_1, arr_2 = np.array([1, 2, 3, 4]), np.array([1, 2, 3, 4, 5])
+        _, _ = apply_random_permutation(arr_1, arr_2)
 
 
 def test_one_hot_encode():
