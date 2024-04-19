@@ -54,6 +54,10 @@ def test_mean_squared_error(y_pred, y_true):
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx)
 
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Mean Squared Error Loss Function:" in repr_test
+
 
 @pytest.mark.parametrize(
     "y_pred, y_true",
@@ -75,6 +79,10 @@ def test_mean_absolute_error(y_pred, y_true):
         y = tf.keras.losses.MeanAbsoluteError()(y_true, y_pred)
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx)
+
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Mean Absolute Error Loss Function:" in repr_test
 
 
 @pytest.mark.parametrize(
@@ -104,6 +112,10 @@ def test_mean_absolute_percent_error(y_pred, y_true):
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx)
 
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Mean Absolute Percent Error Loss Function:" in repr_test
+
 
 @pytest.mark.parametrize(
     "y_pred, y_true",
@@ -132,6 +144,10 @@ def test_mean_log_squared_error(y_pred, y_true):
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx)
 
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Mean Logarithmic Squared Error Loss Function:" in repr_test
+
 
 @pytest.mark.parametrize(
     "y_pred, y_true",
@@ -153,6 +169,10 @@ def test_poisson_error(y_pred, y_true):
         y = tf.keras.losses.Poisson()(y_true, y_pred)
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx, atol=1e-5)
+
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Poisson Loss Function:" in repr_test
 
 
 # Binary Crossentropy needs to deal with probability outputs
@@ -180,3 +200,7 @@ def test_binary_cross_entropy_error(y_pred, y_true):
         y = tf.keras.losses.BinaryCrossentropy()(y_true, y_pred)
     expected_dydx = g.gradient(y, y_pred).numpy()
     assert np.allclose(dydx, expected_dydx)
+
+    # Simple test for __repr__
+    repr_test = repr(loss_func)
+    assert "Binary Cross-Entropy Loss Function:" in repr_test

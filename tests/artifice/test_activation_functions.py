@@ -46,6 +46,10 @@ def test_relu():
     expected_dydx = g.gradient(y, x).numpy()
     assert np.allclose(dydx, expected_dydx)
 
+    # Simple test for __repr__
+    repr_test = repr(activation_func)
+    assert "Relu Activation Function:" in repr_test
+
 
 def test_sigmoid():
     """Testing the Sigmoid activation function."""
@@ -63,6 +67,10 @@ def test_sigmoid():
         y = tf.keras.activations.sigmoid(x)
     expected_dydx = g.gradient(y, x).numpy()
     assert np.allclose(dydx, expected_dydx)
+
+    # Simple test for __repr__
+    repr_test = repr(activation_func)
+    assert "Sigmoid Activation Function:" in repr_test
 
 
 def test_tanh():
@@ -82,6 +90,10 @@ def test_tanh():
     expected_dydx = g.gradient(y, x).numpy()
     assert np.allclose(dydx, expected_dydx)
 
+    # Simple test for __repr__
+    repr_test = repr(activation_func)
+    assert "Tanh Activation Function:" in repr_test
+
 
 def test_linear():
     """Testing the Linear activation function."""
@@ -99,3 +111,7 @@ def test_linear():
         y = tf.keras.activations.linear(x)
     expected_dydx = g.gradient(y, x).numpy()
     assert np.allclose(dydx, expected_dydx)
+
+    # Simple test for __repr__
+    repr_test = repr(activation_func)
+    assert "Linear Activation Function:" in repr_test
