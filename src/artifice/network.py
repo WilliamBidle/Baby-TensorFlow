@@ -27,16 +27,20 @@ from artifice.activation_functions import (
 
 
 class NN:
-
     """
     Defines a neural network.
-
-    :param layer_sequence: A list containing the nodes per layer and correcponding activation
-    functions between layers.
-    :param loss_function: The desired loss function to be used.
     """
 
-    def __init__(self, layer_sequence: Optional[list] = None, loss_function: Optional[str] = None):
+    def __init__(
+        self, layer_sequence: Optional[list] = None, loss_function: Optional[str] = None
+    ):
+        """
+        Neural network constructor.
+
+        :param layer_sequence: A list containing the nodes per layer and correcponding activation
+        functions between layers.
+        :param loss_function: The desired loss function to be used.
+        """
 
         valid_loss_functions = {
             "MSE": MeanSquaredError(),
@@ -61,11 +65,14 @@ class NN:
             activation_funcs = layer_sequence[1::2]
 
             # Check if valid layer elements activation functions
-            assert all(isinstance(item, int)
-                       for item in layers), "Invalid Layer Sequence!"
+            assert all(
+                isinstance(item, int) for item in layers
+            ), "Invalid Layer Sequence!"
+
             for item in activation_funcs:
-                assert item in valid_activation_functions, f"Invalid activation function '{
-                    item}'."
+                assert (
+                    item in valid_activation_functions
+                ), f"Invalid activation function '{item}'."
 
             # Set the layers
             layers = np.array(layer_sequence[::2], dtype=int)
@@ -79,7 +86,8 @@ class NN:
             # initialize each declared activation functions between layers
             for activation_func in activation_funcs:
                 self.activation_funcs.append(
-                    valid_activation_functions[activation_func])
+                    valid_activation_functions[activation_func]
+                )
 
             # initialize the loss_func
             self.loss_func = valid_loss_functions[loss_function]
@@ -113,8 +121,7 @@ class NN:
 
         for layer_reorganized in layers_reorganized:
             # include bias vector with the '+ 1'
-            weight = np.random.randn(
-                layer_reorganized[0], layer_reorganized[1] + 1)
+            weight = np.random.randn(layer_reorganized[0], layer_reorganized[1] + 1)
 
             # HE initialization for weights
             weights.append(weight * np.sqrt(2 / layer_reorganized[1]))
@@ -122,14 +129,14 @@ class NN:
         return weights
 
     def __update_weights(
-        self, weights: List[np.ndarray], layer_values: List[List], _label_: np.ndarray
+        self, weights: List[np.ndarray], layer_values: List[List], y_true: np.ndarray
     ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """
         Update the weights of the network.
 
         :params weights: List containing the 2D weight arrays between the different layers.
         :params layer_values: List containing the values of each layer for a given input value.
-        :params _label_: Array representation for the current label, usually one hot ecoded.
+        :params y_true: Array representation for the truth value.
         :returns weight_updates: List of updated 2D weight arrays between the different layers.
         :returns weights: List of original 2D weight arrays between the different layers.
         """
@@ -141,12 +148,12 @@ class NN:
         weight_updates = weights.copy()
 
         # blue in notes
-        blue = np.diag(self.loss_func.evaluate(
-            layer_values[-1], _label_, diff=True))
+        blue = np.diag(
+            self.loss_func.evaluate(y_pred=layer_values[-1], y_true=y_true, diff=True)
+        )
 
         # need to add an extra component to input for bias
-        layer_output = np.dot(
-            weights[-1], np.concatenate((layer_values[-2], [1])))
+        layer_output = np.dot(weights[-1], np.concatenate((layer_values[-2], [1])))
 
         # red in notes
         red = activations[-1].evaluate(layer_output, diff=True)
@@ -192,13 +199,13 @@ class NN:
         return weight_updates, weights
 
     def get_network_outputs(
-        self, weights: List[np.ndarray], _input_: np.ndarray
+        self, weights: List[np.ndarray], input_layer: np.ndarray
     ) -> np.ndarray:
         """
         Initialize the weights of the network.
 
         :params weights: List containing the 2D weight arrays between the different layers.
-        :params _inputs_: Input layer to the network.
+        :params input_layer: Input layer to the network.
         :returns network_outputs: Output layer of the network.
         """
 
@@ -206,7 +213,7 @@ class NN:
         activations = self.activation_funcs
 
         # add the first layer to the list
-        current_layer = _input_
+        current_layer = input_layer
         network_outputs = [current_layer]
 
         for index, weight in enumerate(weights):
@@ -214,8 +221,7 @@ class NN:
             # need to add an extra component to input for bias
             layer_output = np.dot(weight, np.concatenate((current_layer, [1])))
 
-            current_layer = activations[index].evaluate(
-                layer_output, diff=False)
+            current_layer = activations[index].evaluate(layer_output, diff=False)
 
             network_outputs.append(current_layer)
 
@@ -247,7 +253,9 @@ class NN:
         :params visualize:
         """
 
-        assert self.weights is not None, "Cannot train because weights have not been initialized!"
+        assert (
+            self.weights is not None
+        ), "Cannot train because weights have not been initialized!"
 
         weights = self.weights  # get the list of weights
 
@@ -332,7 +340,8 @@ class NN:
         """
         Save a model.
 
-        :params filename:
+        :params out_dir: Output directory.
+        :params filename: Output filename.
         """
 
         # Enforce trailing backslash to directory
@@ -347,6 +356,7 @@ class NN:
         to_save = [
             self.weights,
             self.activation_funcs,
+            self.loss_func,
         ]  # save both the activations and weights
         with open(save_path, "wb") as fp:  # save the weights and activations
             pickle.dump(to_save, fp)
@@ -354,3 +364,31 @@ class NN:
         print()
         print(f"Model saved at '{save_path}'")
         print()
+
+    @classmethod
+    def load_model(cls, filepath: str):
+        """
+        Loads a model.
+
+        :params filepath: Full path information to save model including the filename.
+        """
+
+        load_path = filepath
+
+        # Unpickling
+        with open(load_path, "rb") as fp:
+            loaded = pickle.load(fp)
+
+        weights = loaded[0]
+        activations = loaded[1]
+        loss_func = loaded[2]
+
+        # initialize a blank Neural Network
+        nn = NN()
+
+        # Populate the relevant parameters
+        nn.weights = weights
+        nn.activation_funcs = activations
+        nn.loss_func = loss_func
+
+        return nn
