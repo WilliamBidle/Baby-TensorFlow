@@ -1,10 +1,7 @@
 """ List of helper functions. """
 
-import pickle
 from typing import Tuple
 import numpy as np
-
-from artifice.network import NN
 
 
 def apply_random_permutation(
