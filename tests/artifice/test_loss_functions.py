@@ -12,6 +12,7 @@ from artifice.loss_functions import (
     MeanLogSquaredError,
     PoissonError,
     BinaryCrossEntropy,
+    LossFunctionConverter,
 )
 
 
@@ -204,3 +205,27 @@ def test_binary_cross_entropy_error(y_pred, y_true):
     # Simple test for __repr__
     repr_test = repr(loss_func)
     assert "Binary Cross-Entropy Loss Function:" in repr_test
+
+
+class TestLossFunctionConverter:
+    """Tests the ActivationFunctionConverter class."""
+
+    def test_from_str(self):
+        """Testing the from_str function."""
+        assert isinstance(LossFunctionConverter.from_str("MSE"), MeanSquaredError)
+        assert isinstance(LossFunctionConverter.from_str("MAE"), MeanAbsoluteError)
+        assert isinstance(
+            LossFunctionConverter.from_str("MAPE"), MeanAbsolutePercentError
+        )
+        assert isinstance(LossFunctionConverter.from_str("MLSE"), MeanLogSquaredError)
+        assert isinstance(LossFunctionConverter.from_str("PE"), PoissonError)
+        assert isinstance(LossFunctionConverter.from_str("BCE"), BinaryCrossEntropy)
+
+    def test_from_func(self):
+        """Testing the from_func function."""
+        assert LossFunctionConverter.from_func(MeanSquaredError) == "MSE"
+        assert LossFunctionConverter.from_func(MeanAbsoluteError) == "MAE"
+        assert LossFunctionConverter.from_func(MeanAbsolutePercentError) == "MAPE"
+        assert LossFunctionConverter.from_func(MeanLogSquaredError) == "MLSE"
+        assert LossFunctionConverter.from_func(PoissonError) == "PE"
+        assert LossFunctionConverter.from_func(BinaryCrossEntropy) == "BCE"

@@ -2,6 +2,7 @@
 
 """ Loss functions. """
 
+from enum import Enum
 import numpy as np
 import keras.backend as K
 from sympy import symbols, lambdify, Abs, log
@@ -135,3 +136,41 @@ class BinaryCrossEntropy(LossFunction):
     def __repr__(self):
 
         return f"Binary Cross-Entropy Loss Function: \n{self.expression}"
+
+
+class LossFunctionConverter(Enum):
+    """
+    Object to perform conversion between a loss function's name and the actual object.
+
+    "MSE" <---> MeanSquaredError
+    "MAE" <---> MeanAbsoluteError
+    "MAPE" <---> MeanAbsolutePercentError
+    "MLSE" <---> MeanLogSquaredError
+    "PE" <---> PoissonError
+    "BCE" <---> BinaryCrossEntropy
+    """
+
+    MSE = MeanSquaredError
+    MAE = MeanAbsoluteError
+    MAPE = MeanAbsolutePercentError
+    MLSE = MeanLogSquaredError
+    PE = PoissonError
+    BCE = BinaryCrossEntropy
+
+    @classmethod
+    def from_str(cls, name):
+        """
+        Convert to a loss function from its string representation.
+
+        :param name: Name to be converted to its activation function.
+        """
+        return cls[name].value()
+
+    @classmethod
+    def from_func(cls, func):
+        """
+        Convert to string representation from a loss function.
+
+        :param func: Function to be converted to its string representation.
+        """
+        return cls(func).name
