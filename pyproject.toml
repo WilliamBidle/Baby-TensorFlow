@@ -27,6 +27,10 @@ dependencies = [
     "numpy>=1.21.1",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov=tests --cov-report term"
+pythonpath = ["src"]
+
 [project.urls]
 "Homepage" = "https://github.com/WilliamBidle/Artifice"
 "Bug Tracker" = "https://github.com/WilliamBidle/Artifice/issues"

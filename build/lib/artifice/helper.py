@@ -1,7 +1,10 @@
 """ List of helper functions. """
 
+import pickle
 from typing import Tuple
 import numpy as np
+
+from artifice.network import NN
 
 
 def apply_random_permutation(
@@ -39,8 +42,14 @@ def one_hot_encode(labels):
 
     num_unique_elements = np.unique(labels)
 
-    # Create a dictionary mapping unique elements to their index
-    dic = {val: idx for idx, val in enumerate(num_unique_elements)}
+    dic = {}
+    counter = 0
+    for i in num_unique_elements:
+        if i in dic:
+            pass
+        else:
+            dic[i] = counter
+            counter += 1
 
     encoded_labels = np.zeros((len(labels), len(num_unique_elements)))
 
@@ -48,3 +57,25 @@ def one_hot_encode(labels):
         encoded_labels[index][dic[label]] = 1.0
 
     return encoded_labels
+
+
+def load_model(filename="Saved_Model"):
+    """
+    Loads a model.
+
+    :params filename:
+    """
+
+    load_path = "Saved Models/" + filename
+
+    with open(load_path, "rb") as fp:  # Unpickling
+        loaded = pickle.load(fp)
+
+    weights = loaded[0]
+    activations = loaded[1]
+
+    nn = NN()  # initialize a blank Neural Network
+    nn.weights = weights
+    nn.activation_funcs = activations
+
+    return nn
