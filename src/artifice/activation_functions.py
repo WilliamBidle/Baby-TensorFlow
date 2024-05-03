@@ -2,6 +2,7 @@
 
 """ Activation functions. """
 
+from enum import Enum
 import numpy as np
 from sympy import symbols, lambdify, Piecewise, exp, tanh
 
@@ -90,3 +91,37 @@ class Linear(ActivationFunction):
 
     def __repr__(self):
         return f"Linear Activation Function: \n{self.expression}"
+
+
+class ActivationFunctionConverter(Enum):
+    """
+    Object to perform conversion between an activation function's name and the actual object.
+
+    "relu" <---> ReLU
+    "sigmoid" <---> Sigmoid
+    "tanh" <---> Tanh
+    "linear" <---> Linear
+    """
+
+    RELU = (ReLU,)
+    SIGMOID = (Sigmoid,)
+    TANH = (Tanh,)
+    LINEAR = (Linear,)
+
+    @classmethod
+    def from_str(cls, name):
+        """
+        Convert to an activation function from its string representation.
+
+        :param name: Name to be converted to its activation function.
+        """
+        return cls[name.upper()].value[0]()
+
+    @classmethod
+    def from_func(cls, func):
+        """
+        Convert to string representation from an activation function.
+
+        :param func: Function to be converted to its string representation.
+        """
+        return cls((func,)).name.lower()

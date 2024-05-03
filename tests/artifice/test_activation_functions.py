@@ -10,6 +10,7 @@ from artifice.activation_functions import (
     Sigmoid,
     Tanh,
     Linear,
+    ActivationFunctionConverter,
 )
 
 X = np.array([-1, 0, -1], dtype=float)
@@ -115,3 +116,21 @@ def test_linear():
     # Simple test for __repr__
     repr_test = repr(activation_func)
     assert "Linear Activation Function:" in repr_test
+
+
+class TestActivationFunctionConverter:
+    """Tests the ActivationFunctionConverter class."""
+
+    def test_from_str(self):
+        """Testing the from_str function."""
+        assert isinstance(ActivationFunctionConverter.from_str("relu"), ReLU)
+        assert isinstance(ActivationFunctionConverter.from_str("sigmoid"), Sigmoid)
+        assert isinstance(ActivationFunctionConverter.from_str("tanh"), Tanh)
+        assert isinstance(ActivationFunctionConverter.from_str("linear"), Linear)
+
+    def test_from_func(self):
+        """Testing the from_func function."""
+        assert ActivationFunctionConverter.from_func(ReLU) == "relu"
+        assert ActivationFunctionConverter.from_func(Sigmoid) == "sigmoid"
+        assert ActivationFunctionConverter.from_func(Tanh) == "tanh"
+        assert ActivationFunctionConverter.from_func(Linear) == "linear"
