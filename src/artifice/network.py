@@ -10,20 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from artifice.loss_functions import (
-    MeanAbsoluteError,
-    MeanAbsolutePercentError,
-    MeanLogSquaredError,
-    MeanSquaredError,
-    PoissonError,
-    BinaryCrossEntropy,
-)
-from artifice.activation_functions import (
-    Sigmoid,
-    Tanh,
-    ReLU,
-    Linear,
-)
+from artifice.loss_functions import LossFunctionConverter
+from artifice.activation_functions import ActivationFunctionConverter
 
 
 class NN:
@@ -38,27 +26,11 @@ class NN:
         Neural network constructor.
 
         :param layer_sequence: A list containing the nodes per layer and correcponding activation
-        functions between layers.
+            functions between layers.
         :param loss_function: The desired loss function to be used.
         """
 
-        valid_loss_functions = {
-            "MSE": MeanSquaredError(),
-            "MAE": MeanAbsoluteError(),
-            "MAPE": MeanAbsolutePercentError(),
-            "MLSE": MeanLogSquaredError(),
-            "Poisson": PoissonError(),
-            "BCE": BinaryCrossEntropy(),
-        }
-
-        valid_activation_functions = {
-            "relu": ReLU(),
-            "sigmoid": Sigmoid(),
-            "tanh": Tanh(),
-            "linear": Linear(),
-        }
-
-        if layer_sequence is not None:
+        if layer_sequence is not None and loss_function is not None:
 
             # Separate out the layer information and activations (every other element)
             layers = layer_sequence[::2]
@@ -68,11 +40,6 @@ class NN:
             assert all(
                 isinstance(item, int) for item in layers
             ), "Invalid Layer Sequence!"
-
-            for item in activation_funcs:
-                assert (
-                    item in valid_activation_functions
-                ), f"Invalid activation function '{item}'."
 
             # Set the layers
             layers = np.array(layer_sequence[::2], dtype=int)
@@ -86,11 +53,11 @@ class NN:
             # initialize each declared activation functions between layers
             for activation_func in activation_funcs:
                 self.activation_funcs.append(
-                    valid_activation_functions[activation_func]
+                    ActivationFunctionConverter.from_str(activation_func)
                 )
 
             # initialize the loss_func
-            self.loss_func = valid_loss_functions[loss_function]
+            self.loss_func = LossFunctionConverter.from_str(loss_function)
 
             # initialize the loss_func_label (used in plotting for now)
             self.loss_func_label = loss_function
@@ -198,7 +165,7 @@ class NN:
 
         return weight_updates, weights
 
-    def get_network_outputs(
+    def __get_network_outputs(
         self, weights: List[np.ndarray], input_layer: np.ndarray
     ) -> np.ndarray:
         """
@@ -231,8 +198,8 @@ class NN:
         """
         Compute the error between the neural network's output and expected value.
 
-        :params _result_: Output layer of the network.
-        :params _label_: Expected result.
+        :param _result_: Output layer of the network.
+        :param _label_: Expected result.
         :returns error: The error of the network.
         """
         error = self.loss_func.evaluate(_result_, _label_, diff=False)
@@ -240,17 +207,25 @@ class NN:
         return error
 
     def train(  # pylint: disable=too-many-arguments, too-many-locals
-        self, x_train, y_train, batch_size=1, epochs=1, epsilon=1, visualize=False
+        self,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        batch_size: int = 1,
+        epochs: int = 1,
+        epsilon: float = 1,
+        verbose: bool = False,
+        visualize: bool = False,
     ) -> None:
         """
         Train a model.
 
-        :params x_train:
-        :params y_train:
-        :params batch_size:
-        :params epochs:
-        :params epsilon:
-        :params visualize:
+        :param x_train:
+        :param y_train:
+        :param batch_size:
+        :param epochs:
+        :param epsilon:
+        :param verbose:
+        :param visualize:
         """
 
         assert (
@@ -276,10 +251,13 @@ class NN:
 
             # iterate through the inputs and labels
             for _input_, _label_ in tqdm(
-                zip(x_train, y_train), total=len(x_train), desc=f"Epoch {str(i + 1)}"
+                zip(x_train, y_train),
+                total=len(x_train),
+                desc=f"Epoch {str(i + 1)}",
+                disable=(not verbose),
             ):
 
-                network_output = self.get_network_outputs(
+                network_output = self.__get_network_outputs(
                     weights, _input_
                 )  # the current network output
 
@@ -319,19 +297,25 @@ class NN:
 
             plt.show()
 
-    def evaluate(self, x_test):
+    def evaluate(self, x_test: np.ndarray, verbose: bool = False) -> np.ndarray:
         """
         Evaluate a model.
 
-        :params x_test:
+        :param x_test:
+        :param verbose:
         :returns results:
         """
 
         results = []
 
-        for _input_ in tqdm(x_test, desc="Evaluating Test Data", total=len(x_test)):
+        for _input_ in tqdm(
+            x_test,
+            desc="Evaluating Test Data",
+            total=len(x_test),
+            disable=(not verbose),
+        ):
             # the current network output
-            network_output = self.get_network_outputs(self.weights, _input_)
+            network_output = self.__get_network_outputs(self.weights, _input_)
             results.append(network_output[-1])
 
         return results
@@ -370,7 +354,7 @@ class NN:
         """
         Loads a model.
 
-        :params filepath: Full path information to save model including the filename.
+        :params filepath: Full path information to load model including the filename.
         """
 
         load_path = filepath
